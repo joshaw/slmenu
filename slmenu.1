@@ -1,0 +1,65 @@
+.TH SLMENU 1 slmenu\-VERSION
+.SH NAME
+slmenu \- single line menu
+.SH SYNOPSIS
+.B slmenu
+.RB [ \-b ]
+.RB [ \-t ]
+.RB [ \-i ]
+.RB [ \-l
+.IR lines ]
+.RB [ \-p
+.IR prompt ]
+.RB [ \-v ]
+.SH DESCRIPTION
+.B slmenu
+is a dynamic menu for the console, based on the wonderful
+.IR dmenu (1).
+It also manages huge numbers of user\-defined menu items efficiently.
+.P
+slmenu reads a list of newline\-separated items from stdin and creates a menu.
+Then it re-opens the tty and prompts for user input.
+When the user selects an item or enters any text and presses Return, their
+choice is printed to stdout and slmenu terminates.
+The user interface is drawn in stderr, so it does not interfere with the
+result.
+.SH OPTIONS
+.TP
+.B \-b " or " -t
+slmenu appears at the bottom (\-b) or top (\-t) of the terminal. By default,
+slmenu appears in the current line.
+.TP
+.B \-i
+slmenu matches menu items case insensitively.
+.TP
+.BI \-l " lines"
+puts slmenu in multiline mode and chooses the number of lines to display
+.TP
+.BI \-p " prompt"
+defines the prompt to be displayed to the left of the input field.
+.TP
+.B \-v
+prints version information to stdout, then exits.
+.SH USAGE
+slmenu is completely controlled by the keyboard.  Besides standard Unix line
+editing and item selection (arrow keys, page up/down, home and end), the
+following keys are recognized:
+.TP
+.B Tab (Ctrl\-i)
+Copy the selected item to the input field.
+.TP
+.B Return (Ctrl\-j " or " Ctrl\-m)
+Confirm selection.  Prints the selected item to stdout and exits, returning
+success.
+.TP
+.B Ctrl\-\] " or " Ctrl\-\\\\
+Confirm input.  Prints the input text to stdout and exits, returning success.
+.TP
+.B Escape\-Escape (Ctrl\-c)
+Exit without selecting an item, returning failure.
+.TP
+.B Ctrl\-y
+Paste the current X selection into the input field.
+.SH SEE ALSO
+.IR dmenu (1),
+.IR sandy (1),

@@ -319,10 +319,12 @@ void readstdin() {
 	inputw = textw(maxstr);
 }
 
-void
-resetline(void) {
-	if(barpos!=0) fprintf(stderr, "\033[%iH", (barpos>0)?0:(mh-lines));
-	else fprintf(stderr, "\033[%iF", lines);
+void resetline(void) {
+	if (barpos!=0) {
+		fprintf(stderr, "\033[%iH", (barpos>0)?0:(mh-lines));
+	} else {
+		fprintf(stderr, "\033[%iF", lines);
+	}
 }
 
 int run(void) {

@@ -59,12 +59,12 @@ static Item  *prev, *curr, *next, *sel;
 static struct termios tio_old, tio_new;
 static int  (*fstrncmp)(const char *, const char *, size_t) = strncmp;
 
-void
-appenditem(Item *item, Item **list, Item **last) {
-	if(!*last)
+void appenditem(Item *item, Item **list, Item **last) {
+	if (!*last) {
 		*list = item;
-	else
+	} else {
 		(*last)->right = item;
+	}
 	item->left = *last;
 	item->right = NULL;
 	*last = item;

@@ -333,6 +333,9 @@ run(void) {
 						case 'D': /* Left arrow */
 							c=CONTROL('B');
 							goto switch_top;
+						case 'Z': /* Shift-TAB */
+							c=CONTROL('P');
+							goto switch_top;
 					}
 					break;
 				case 'b':
@@ -440,12 +443,8 @@ run(void) {
 			insert(NULL, nextrune(-1) - cursor);
 			break;
 		case CONTROL('I'): /* TAB */
-			if(!sel)
-				break;
-			strncpy(text, sel->text, sizeof text);
-			cursor = strlen(text);
-			match(TRUE);
-			break;
+			c=CONTROL('F');
+			goto switch_top;
 		case CONTROL('K'):
 			text[cursor] = '\0';
 			match(FALSE);

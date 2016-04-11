@@ -70,21 +70,30 @@ void appenditem(Item *item, Item **list, Item **last) {
 	*last = item;
 }
 
-void
-calcoffsets(void) {
-        int i, n;
+void calcoffsets(void) {
+    int i, n;
 
-	if(lines>0)
+	if (lines>0) {
 		n = lines;
-	else
+	} else {
 		n = mw - (promptw + inputw + textw("<") + textw(">"));
 
-        for(i = 0, next = curr; next; next = next->right)
-                if((i += (lines>0 ? 1 : MIN(textw(next->text), n))) > n)
-                        break;
-        for(i = 0, prev = curr; prev && prev->left; prev = prev->left)
-                if((i += (lines>0 ? 1 : MIN(textw(prev->left->text), n))) > n)
-                        break;
+        for (i = 0, next = curr; next; next = next->right) {
+
+				i += (lines>0 ? 1 : MIN(textw(next->text), n));
+                if (i > n) {
+	                break;
+	            }
+	    }
+	    
+        for (i = 0, prev = curr; prev && prev->left; prev = prev->left) {
+
+			i += (lines>0 ? 1 : MIN(textw(prev->left->text), n));
+            if (i > n) {
+                break;
+            }
+	    }
+    }
 }
 
 void

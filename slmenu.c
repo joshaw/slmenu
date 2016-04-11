@@ -276,16 +276,16 @@ int run(void) {
 	FILE *f;
 	int n;
 
-	while(1) {
+	while (1) {
 		read(0, &c, 1);
 		memset(buf, '\0', sizeof buf);
 		buf[0]=c;
 		switch_top:
-		switch(c) {
+		switch (c) {
 		case CONTROL('['):
 			read(0, &c, 1);
 			esc_switch_top:
-			switch(c) {
+			switch (c) {
 				case CONTROL('['): /* ESC, need to press twice due to console limitations */
 					c=CONTROL('C');
 					goto switch_top;
@@ -344,31 +344,39 @@ int run(void) {
 					}
 					break;
 				case 'b':
-					while(cursor > 0 && text[nextrune(-1)] == ' ')
+					while (cursor > 0 && text[nextrune(-1)] == ' ') {
 						cursor = nextrune(-1);
-					while(cursor > 0 && text[nextrune(-1)] != ' ')
+					}
+					while (cursor > 0 && text[nextrune(-1)] != ' ') {
 						cursor = nextrune(-1);
+					}
 					break;
 				case 'f':
-					while(text[cursor] != '\0' && text[nextrune(+1)] == ' ')
+					while (text[cursor] != '\0' && text[nextrune(+1)] == ' ') {
 						cursor = nextrune(+1);
-					if(text[cursor] != '\0') do
-						cursor = nextrune(+1);
-					while(text[cursor] != '\0' && text[cursor] != ' ');
+					}
+					if (text[cursor] != '\0') {
+						do {
+							cursor = nextrune(+1);
+						} while(text[cursor] != '\0' && text[cursor] != ' ');
+					}
 					break;
 				case 'd':
-					while(text[cursor] != '\0' && text[nextrune(+1)] == ' ') {
+					while (text[cursor] != '\0' && text[nextrune(+1)] == ' ') {
 						cursor = nextrune(+1);
 						insert(NULL, nextrune(-1) - cursor);
 					}
-					if(text[cursor] != '\0') do {
-						cursor = nextrune(+1);
-						insert(NULL, nextrune(-1) - cursor);
-					} while(text[cursor] != '\0' && text[cursor] != ' ');
+					if  (text[cursor] != '\0') {
+						do {
+							cursor = nextrune(+1);
+							insert(NULL, nextrune(-1) - cursor);
+						} while(text[cursor] != '\0' && text[cursor] != ' ');
+					}
 					break;
 				case 'v':
-					if(!next)
+					if (!next) {
 						break;
+					}
 					sel=curr=next;
 					calcoffsets();
 					break;
@@ -410,13 +418,14 @@ int run(void) {
 				cursor = strlen(text);
 				break;
 			}
-			if(next) {
+			if (next) {
 				curr = matchend;
 				calcoffsets();
 				curr = prev;
 				calcoffsets();
-				while(next && (curr = curr->right))
+				while (next && (curr = curr->right)) {
 					calcoffsets();
+				}
 			}
 			sel = matchend;
 			break;
@@ -477,27 +486,34 @@ int run(void) {
 			break;
 		case CONTROL('W'):
 			/* delete from before cursor back to space */
-			while(cursor > 0 && text[nextrune(-1)] == ' ')
+			while (cursor > 0 && text[nextrune(-1)] == ' ') {
 				insert(NULL, nextrune(-1) - cursor);
-			while(cursor > 0 && text[nextrune(-1)] != ' ')
+			}
+			while (cursor > 0 && text[nextrune(-1)] != ' ') {
 				insert(NULL, nextrune(-1) - cursor);
+			}
 			break;
 		case CONTROL('V'):
 			/* jump selection backwards */
-			if(!prev)
+			if (!prev) {
 				break;
+			}
 			sel = curr = prev;
 			calcoffsets();
 			break;
 		case CONTROL('Y'):
 			/* insert from clipboard file */
-			if((f=popen(XSEL, "r")) != NULL) {
-				while((n= fread(&buf, 1, sizeof buf, f)) > 0) insert(buf, n);
+			f = popen(XSEL, "r");
+			if (f != NULL) {
+				while ((n = fread(&buf, 1, sizeof buf, f)) > 0) {
+					insert(buf, n);
+				}
 				pclose(f);
 			}
 		default:
-			if(!iscntrl(*buf))
+			if (!iscntrl(*buf)) {
 				insert(buf, strlen(buf));
+			}
 			break;
 		}
 		drawmenu();

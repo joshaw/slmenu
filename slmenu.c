@@ -220,13 +220,14 @@ fstrstr(const char *s, const char *sub) {
 	return NULL;
 }
 
-void
-insert(const char *str, ssize_t n) {
-	if(strlen(text) + n > sizeof text - 1)
+void insert(const char *str, ssize_t n) {
+	if (strlen(text) + n > sizeof text - 1) {
 		return;
+	}
 	memmove(&text[cursor + n], &text[cursor], sizeof text - cursor - MAX(n, 0));
-	if(n > 0)
+	if (n > 0) {
 		memcpy(&text[cursor], str, n);
+	}
 	cursor += n;
 	match(n > 0 && text[cursor] == '\0');
 }

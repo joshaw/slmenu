@@ -6,7 +6,7 @@ PREFIX = /usr/local
 MANPREFIX = ${PREFIX}/share/man
 
 # flags
-CPPFLAGS = -D_BSD_SOURCE -DVERSION=\"${VERSION}\"
+CPPFLAGS = -D_DEFAULT_SOURCE -DVERSION=\"${VERSION}\"
 CFLAGS   = -ansi -pedantic -Wall -Os ${CPPFLAGS}
 LDFLAGS  = -s
 

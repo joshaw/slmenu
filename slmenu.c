@@ -330,8 +330,6 @@ void resetline(void) {
 int run(void) {
 	char buf[32];
 	char c;
-	FILE *f;
-	int n;
 
 	while (1) {
 		read(0, &c, 1);
@@ -558,15 +556,6 @@ int run(void) {
 			sel = curr = prev;
 			calcoffsets();
 			break;
-		case CONTROL('Y'):
-			/* insert from clipboard file */
-			f = popen(XSEL, "r");
-			if (f != NULL) {
-				while ((n = fread(&buf, 1, sizeof buf, f)) > 0) {
-					insert(buf, n);
-				}
-				pclose(f);
-			}
 		default:
 			if (!iscntrl(*buf)) {
 				insert(buf, strlen(buf));

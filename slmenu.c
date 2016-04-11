@@ -153,8 +153,7 @@ void drawtext(const char *t, size_t w, Color col) {
 	free(buf);
 }
 
-void
-drawmenu(void) {
+void drawmenu(void) {
 	Item *item;
 	int rw;
 
@@ -171,14 +170,19 @@ drawmenu(void) {
 
 	drawtext(text, ((lines==0 && matches)?inputw:mw-promptw), Normal);
 
-	if(lines>0) {
-		if(barpos!=0) resetline();
-		for(rw=0, item = curr; item != next; rw++, item = item->right) {
+	if (lines>0) {
+		if (barpos!=0) {
+			resetline();
+		}
+		
+		for (rw=0, item = curr; item != next; rw++, item = item->right) {
 			fprintf(stderr, "\n");
 			drawtext(item->text, mw, (item == sel) ? Highlight : Normal);
 		}
-		for(; rw<lines; rw++)
+		
+		for(; rw<lines; rw++) {
 			fprintf(stderr, "\n\033[K");
+		}
 		resetline();
 		
 	} else if (matches) {

@@ -17,9 +17,11 @@
 #define FALSE 0
 #define TRUE  1
 
+#define HIGHLIGHT_SEQ "\033[7m"
+
 enum Color {
-	C_Normal,
-	C_Reverse
+	Normal,
+	Highlight
 };
 typedef enum Color Color;
 
@@ -129,13 +131,13 @@ drawtext(const char *t, size_t w, Color col) {
 	}
 	
 	switch(col) {
-	case C_Reverse:
-		prestr="\033[7m";
-		poststr="\033[0m";
-		break;
-	case C_Normal:
-	default:
-		prestr=poststr="";
+		case Highlight:
+			prestr = HIGHLIGHT_SEQ;
+			poststr = "\033[0m";
+			break;
+		case Normal:
+		default:
+			prestr=poststr="";
 	}
 
 	memset(buf, ' ', tw);
@@ -164,31 +166,41 @@ drawmenu(void) {
 	fprintf(stderr, "\033[0G");
 	fprintf(stderr, "\033[K");
 
-	if(prompt)
-		drawtext(prompt, promptw, C_Reverse);
+	if (prompt) {
+		drawtext(prompt, promptw, Highlight);
+	}
 
-	drawtext(text, ((lines==0 && matches)?inputw:mw-promptw), C_Normal);
+	drawtext(text, ((lines==0 && matches)?inputw:mw-promptw), Normal);
 
 	if(lines>0) {
 		if(barpos!=0) resetline();
 		for(rw=0, item = curr; item != next; rw++, item = item->right) {
 			fprintf(stderr, "\n");
-			drawtext(item->text, mw, (item == sel) ? C_Reverse : C_Normal);
+			drawtext(item->text, mw, (item == sel) ? Highlight : Normal);
 		}
 		for(; rw<lines; rw++)
 			fprintf(stderr, "\n\033[K");
 		resetline();
-	} else if(matches) {
-		if(curr->left)
-		for(item = curr; item != next; item = item->right) {
-			drawtext(item->text, MIN(textw(item->text), rw), (item == sel) ? C_Reverse : C_Normal);
-			if((rw-= textw(item->text)) <= 0) break;
+		
+	} else if (matches) {
 		rw = mw - (6 + promptw + inputw);
+		
+		if (curr->left) {
 			drawtext("<", 3 /*textw("<")*/, Normal);
 		}
-		if(next) {
-			drawtext(">", 5 /*textw(">")*/, C_Normal);
+		
+		for (item = curr; item != next; item = item->right) {
+			/* item width */
+			int iw = MIN(textw(item->text), rw); 
+			drawtext(item->text, iw, (item == sel) ? Highlight : Normal);
+			
+			rw -= textw(item->text);
+			if (rw <= 0)
+				break;
+		}
+		if (next) {
 			fprintf(stderr, "\033[%iG", mw-4);
+			drawtext("  >", 5 /*textw(">")*/, Normal);
 		}
 
 	}

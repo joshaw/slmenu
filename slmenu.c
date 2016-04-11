@@ -105,8 +105,7 @@ void cleanup() {
 	tcsetattr(0, TCSANOW, &tio_old);
 }
 
-void
-die(const char *s) {
+void die(const char *s) {
 	tcsetattr(0, TCSANOW, &tio_old);
 	fprintf(stderr, "%s\n", s);
 	exit(1);

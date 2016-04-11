@@ -645,28 +645,37 @@ int
 main(int argc, char **argv) {
 	int i;
 
-	for(i=0; i<argc; i++)
+	for (i=0; i<argc; i++) {
 		/* single flags */
-		if(!strcmp(argv[i], "-v")) {
+		if (!strcmp(argv[i], "-v")) {
+			/* version */
 			puts("slmenu, © 2011 slmenu engineers, see LICENSE for details");
 			exit(EXIT_SUCCESS);
-		}
-		else if(!strcmp(argv[i], "-i"))
+
+		} else if (!strcmp(argv[i], "-i")) {
+			/* case insensitive */
 			fstrncmp = strncasecmp;
-		else if(!strcmp(argv[i], "-t"))
+		} else if (!strcmp(argv[i], "-t")) {
+			/* top */
 			barpos=1;
-		else if(!strcmp(argv[i], "-b"))
+		} else if (!strcmp(argv[i], "-b")) {
+			/* bottom */
 			barpos=-1;
+			
 		/* double flags */
-		else if(!strcmp(argv[i], "-p"))
+		} else if (!strcmp(argv[i], "-p")) {
+			/* prompt */
 			prompt=argv[++i];
-		else if(!strcmp(argv[i], "-l"))
+		} else if (!strcmp(argv[i], "-l")) {
+			/* vertical */
 			lines = atoi(argv[++i]);
+		}
+	}
 
 	readstdin();
 	setup();
+	drawmenu();
 	i = run();
 	cleanup();
 	return i;
 }
-

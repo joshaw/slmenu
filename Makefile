@@ -6,7 +6,7 @@ include config.mk
 SRC = slmenu.c
 OBJ = ${SRC:.c=.o}
 
-all: options slmenu
+all: slmenu
 
 options:
 	@echo slmenu build options:

@@ -96,10 +96,12 @@ void calcoffsets(void) {
     }
 }
 
-void
-cleanup() {
-	if(barpos==0) fprintf(stderr, "\n");
-	else fprintf(stderr, "\033[G\033[K");
+void cleanup() {
+	if (barpos==0) {
+		fprintf(stderr, "\n");
+	} else {
+		fprintf(stderr, "\033[G\033[K");
+	}
 	tcsetattr(0, TCSANOW, &tio_old);
 }
 

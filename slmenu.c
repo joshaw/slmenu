@@ -117,9 +117,17 @@ drawtext(const char *t, size_t w, Color col) {
 	int i, tw;
 	char *buf;
 
-	if(w<5) return; /* This is the minimum size needed to write a label: 1 char + 4 padding spaces */
-	tw=w-4; /* This is the text width, without the padding */
-	if((buf=calloc(1, (tw+1))) == NULL) die("Can't calloc.");
+	if (w<3) {
+		/* This is the minimum size needed to write a label: 1 char + 2 padding spaces */
+		return; 
+	}
+	
+	tw = w-2; /* This is the text width, without the padding */
+	buf = calloc(1, (tw+1));
+	if (buf == NULL) {
+		die("Can't calloc.");
+	}
+	
 	switch(col) {
 	case C_Reverse:
 		prestr="\033[7m";
@@ -133,10 +141,14 @@ drawtext(const char *t, size_t w, Color col) {
 	memset(buf, ' ', tw);
 	buf[tw]='\0';
 	memcpy(buf, t, MIN(strlen(t), tw));
-	if(textw(t)>w) /* Remember textw returns the width WITH padding */
-		for(i=MAX((tw-4), 0); i<tw; i++) buf[i]='.';
+	if (textw(t)>w) {
+		/* Remember textw returns the width WITH padding */
+		for (i=MAX((tw-2), 0); i<tw; i++) {
+			buf[i]='.';
+		}
+	}
 
-	fprintf(stderr, "%s  %s  %s", prestr, buf, poststr);
+	fprintf(stderr, "%s%s%s  ", prestr, buf, poststr);
 	free(buf);
 }
 
@@ -167,16 +179,16 @@ drawmenu(void) {
 			fprintf(stderr, "\n\033[K");
 		resetline();
 	} else if(matches) {
-		rw=mw-(4+promptw+inputw);
 		if(curr->left)
-			drawtext("<", 5 /*textw("<")*/, C_Normal);
 		for(item = curr; item != next; item = item->right) {
 			drawtext(item->text, MIN(textw(item->text), rw), (item == sel) ? C_Reverse : C_Normal);
 			if((rw-= textw(item->text)) <= 0) break;
+		rw = mw - (6 + promptw + inputw);
+			drawtext("<", 3 /*textw("<")*/, Normal);
 		}
 		if(next) {
-			fprintf(stderr, "\033[%iG", mw-5);
 			drawtext(">", 5 /*textw(">")*/, C_Normal);
+			fprintf(stderr, "\033[%iG", mw-4);
 		}
 
 	}
@@ -256,7 +268,7 @@ nextrune(int inc) {
 void
 readstdin() {
 	char buf[sizeof text], *p, *maxstr = NULL;
-	size_t i, max = 0, size = 0;
+	size_t i, max = 10, size = 0;
 
 	for(i = 0; fgets(buf, sizeof buf, stdin); i++) {
 		if(i+1 >= size / sizeof *items)
@@ -567,7 +579,9 @@ setup(void) {
 
 	lines=MIN(MAX(lines, 0), mh);
 	promptw=(prompt?textw(prompt):0);
-	inputw=MIN(inputw, mw/3);
+
+	/* text input area */
+	inputw = MIN(inputw, mw/6);
 	match(FALSE);
 	if(barpos!=0) resetline();
 	drawmenu();
@@ -583,7 +597,8 @@ textwn(const char *s, int l) {
 	int b, c; /* bytes and UTF-8 characters */
 
 	for(b=c=0; s && s[b] && (l<0 || b<l); b++) if((s[b] & 0xc0) != 0x80) c++;
-	return c+4; /* Accomodate for the leading and trailing spaces */
+	/* Accomodate for padding */
+	return c+2; 
 }
 
 int

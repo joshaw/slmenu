@@ -10,10 +10,10 @@
 #include <termios.h>
 #include <unistd.h>
 
-#define XSEL          "xsel -ob 2>/dev/null || cat /tmp/.sandy.clipboard.$USER"
-#define CONTROL(ch)   (ch ^ 0x40)
-#define MIN(a,b)      ((a) < (b) ? (a) : (b))
-#define MAX(a,b)      ((a) > (b) ? (a) : (b))
+#define XSEL        "xsel -ob 2>/dev/null || cat /tmp/.sandy.clipboard.$USER"
+#define CONTROL(ch) (ch ^ 0x40)
+#define MIN(a,b)    ((a) < (b) ? (a) : (b))
+#define MAX(a,b)    ((a) > (b) ? (a) : (b))
 #define FALSE 0
 #define TRUE  1
 
@@ -113,8 +113,7 @@ void die(const char *s) {
 	exit(1);
 }
 
-void
-drawtext(const char *t, size_t w, Color col) {
+void drawtext(const char *t, size_t w, Color col) {
 	const char *prestr, *poststr;
 	int i, tw;
 	char *buf;

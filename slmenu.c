@@ -270,8 +270,7 @@ resetline(void) {
 	else fprintf(stderr, "\033[%iF", lines);
 }
 
-int
-run(void) {
+int run(void) {
 	char buf[32];
 	char c;
 	FILE *f;
@@ -296,7 +295,10 @@ run(void) {
 						case '1': /* Home */
 						case '7':
 						case 'H':
-							if(c!='H') read(0, &c, 1); /* Remove trailing '~' from stdin */
+							if (c!='H') {
+								/* Remove trailing '~' from stdin */
+								read(0, &c, 1); 
+							}
 							c=CONTROL('A');
 							goto switch_top;
 						case '2': /* Insert */
@@ -310,7 +312,10 @@ run(void) {
 						case '4': /* End */
 						case '8':
 						case 'F':
-							if(c!='F') read(0, &c, 1); /* Remove trailing '~' from stdin */
+							if (c!='F') {
+								/* Remove trailing '~' from stdin */
+								read(0, &c, 1); 
+							}
 							c=CONTROL('E');
 							goto switch_top;
 						case '5': /* PageUp */
@@ -372,20 +377,27 @@ run(void) {
 			}
 			break;
 		case CONTROL('C'):
+			/* cancel */
 			return EXIT_FAILURE;
 		case CONTROL('M'): /* Return */
 		case CONTROL('J'):
-			if(sel) strncpy(text, sel->text, sizeof text); /* Complete the input first, when hitting return */
+			if (sel) {
+				/* Complete the input first, when hitting return */
+				strncpy(text, sel->text, sizeof text);
+			}
 			cursor = strlen(text);
 			match(TRUE);
 			drawmenu();
 			/* fallthrough */
 		case CONTROL(']'):
-		case CONTROL('\\'): /* These are usually close enough to RET to replace Shift+RET, again due to console limitations */
+		case CONTROL('\\'): 
+			/* These are usually close enough to RET to replace Shift+RET, 
+			 * again due to console limitations */
 			puts(text);
 			return EXIT_SUCCESS;
 		case CONTROL('A'):
-			if(sel == matches) {
+			/* cursor to start of line */
+			if (sel == matches) {
 				cursor=0;
 				break;
 			}
@@ -393,7 +405,8 @@ run(void) {
 			calcoffsets();
 			break;
 		case CONTROL('E'):
-			if(text[cursor] != '\0') {
+			/* cursor to end of line */
+			if (text[cursor] != '\0') {
 				cursor = strlen(text);
 				break;
 			}
@@ -408,63 +421,76 @@ run(void) {
 			sel = matchend;
 			break;
 		case CONTROL('B'):
-			if(cursor > 0 && (!sel || !sel->left || lines > 0)) {
+			/* cursor back 1 character */
+			if (cursor > 0 && (!sel || !sel->left || lines > 0)) {
 				cursor = nextrune(-1);
 				break;
 			}
 			/* fallthrough */
 		case CONTROL('P'):
-			if(sel && sel->left && (sel = sel->left)->right == curr) {
+			/* select previous entry */
+			if (sel && sel->left && (sel = sel->left)->right == curr) {
 				curr = prev;
 				calcoffsets();
 			}
 			break;
 		case CONTROL('F'):
-			if(text[cursor] != '\0') {
+			/* cursor forward 1 character */
+			if (text[cursor] != '\0') {
 				cursor = nextrune(+1);
 				break;
 			}
 			/* fallthrough */
 		case CONTROL('N'):
-			if(sel && sel->right && (sel = sel->right) == next) {
+			/* select next entry */
+			if (sel && sel->right && (sel = sel->right) == next) {
 				curr = next;
 				calcoffsets();
 			}
 			break;
 		case CONTROL('D'):
-			if(text[cursor] == '\0')
+			/* delete character under cursor */
+			if (text[cursor] == '\0') {
 				break;
+			}
 			cursor = nextrune(+1);
 			/* fallthrough */
 		case CONTROL('H'):
 		case CONTROL('?'): /* Backspace */
-			if(cursor == 0)
+			/* delete character before cursor */
+			if (cursor == 0) {
 				break;
+			}
 			insert(NULL, nextrune(-1) - cursor);
 			break;
 		case CONTROL('I'): /* TAB */
 			c=CONTROL('F');
 			goto switch_top;
 		case CONTROL('K'):
+			/* delete everything under cursor to end */
 			text[cursor] = '\0';
 			match(FALSE);
 			break;
 		case CONTROL('U'):
+			/* delete everything from start to before cursor */
 			insert(NULL, 0 - cursor);
 			break;
 		case CONTROL('W'):
+			/* delete from before cursor back to space */
 			while(cursor > 0 && text[nextrune(-1)] == ' ')
 				insert(NULL, nextrune(-1) - cursor);
 			while(cursor > 0 && text[nextrune(-1)] != ' ')
 				insert(NULL, nextrune(-1) - cursor);
 			break;
 		case CONTROL('V'):
+			/* jump selection backwards */
 			if(!prev)
 				break;
 			sel = curr = prev;
 			calcoffsets();
 			break;
 		case CONTROL('Y'):
+			/* insert from clipboard file */
 			if((f=popen(XSEL, "r")) != NULL) {
 				while((n= fread(&buf, 1, sizeof buf, f)) > 0) insert(buf, n);
 				pclose(f);

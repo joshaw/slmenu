@@ -575,28 +575,29 @@ int run(void) {
 	}
 }
 
-void
-setup(void) {
+void setup(void) {
 	int fd, result=-1;
 	struct winsize ws;
 
 	/* re-open stdin to read keyboard */
-	if(freopen("/dev/tty", "r", stdin) == NULL) die("Can't reopen tty.");
+	if (freopen("/dev/tty", "r", stdin) == NULL) {
+		die("Can't reopen tty.");
+	}
 
 	/* ioctl() the tty to get size */
 	fd = open("/dev/tty", O_RDWR);
-	if(fd == -1) {
-		mh=24;
-		mw=80;
+	if (fd == -1) {
+		mw = 80;
+		mh = 24;
 	} else {
 		result = ioctl(fd, TIOCGWINSZ, &ws);
 		close(fd);
-		if(result<0) {
-			mw=80;
-			mh=24;
+		if (result<0) {
+			mw = 80;
+			mh = 24;
 		} else {
-			mw=ws.ws_col;
-			mh=ws.ws_row;
+			mw = ws.ws_col;
+			mh = ws.ws_row;
 		}
 	}
 
@@ -610,14 +611,16 @@ setup(void) {
 	tio_new.c_cc[VMIN]=1;
 	tcsetattr(0, TCSANOW, &tio_new);
 
-	lines=MIN(MAX(lines, 0), mh);
-	promptw=(prompt?textw(prompt):0);
+	lines = MIN(MAX(lines, 0), mh);
+	promptw = (prompt?textw(prompt):0);
 
 	/* text input area */
 	inputw = MIN(inputw, mw/6);
+	
 	match(FALSE);
-	if(barpos!=0) resetline();
-	drawmenu();
+	if (barpos!=0) {
+		resetline();
+	}
 }
 
 size_t

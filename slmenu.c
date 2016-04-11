@@ -623,16 +623,18 @@ void setup(void) {
 	}
 }
 
-size_t
-textw(const char *s) {
+size_t textw(const char *s) {
 	return textwn(s, -1);
 }
 
-size_t
-textwn(const char *s, int l) {
+size_t textwn(const char *s, int l) {
 	int b, c; /* bytes and UTF-8 characters */
 
-	for(b=c=0; s && s[b] && (l<0 || b<l); b++) if((s[b] & 0xc0) != 0x80) c++;
+	for (b=c=0; s && s[b] && (l<0 || b<l); b++) {
+		if ((s[b] & 0xc0) != 0x80) {
+			c++;
+		}
+	}
 	/* Accomodate for padding */
 	return c+2; 
 }

@@ -655,14 +655,24 @@ main(int argc, char **argv) {
 		} else if (!strcmp(argv[i], "-b")) {
 			/* bottom */
 			barpos=-1;
-			
+
 		/* double flags */
 		} else if (!strcmp(argv[i], "-p")) {
 			/* prompt */
-			prompt=argv[++i];
+			i++;
+			if (argv[i]) {
+				prompt=argv[i];
+			} else {
+				die("Need prompt text");
+			}
 		} else if (!strcmp(argv[i], "-l")) {
 			/* vertical */
-			lines = atoi(argv[++i]);
+			i++;
+			if (argv[i]) {
+				lines = atoi(argv[i]);
+			} else {
+				die("Need number of lines");
+			}
 		}
 	}
 

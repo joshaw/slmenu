@@ -17,10 +17,12 @@
 #define TRUE  1
 
 #define HIGHLIGHT_SEQ "\033[7m"
+#define DEBUG_SEQ "\033[101m"
 
 enum Color {
 	Normal,
-	Highlight
+	Highlight,
+	Debug
 };
 typedef enum Color Color;
 
@@ -129,6 +131,10 @@ void drawtext(const char *t, size_t w, Color col) {
 	}
 	
 	switch(col) {
+		case Debug:
+			prestr = DEBUG_SEQ;
+			poststr = "\033[0m";
+			break;
 		case Highlight:
 			prestr = HIGHLIGHT_SEQ;
 			poststr = "\033[0m";

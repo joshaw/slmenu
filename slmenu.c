@@ -10,7 +10,7 @@
 #include <termios.h>
 #include <unistd.h>
 
-#define CONTROL(ch) (ch ^ 0x40)
+#define CONTROL(ch) ((ch) ^ 0x40)
 #define MIN(a,b)    ((a) < (b) ? (a) : (b))
 #define MAX(a,b)    ((a) > (b) ? (a) : (b))
 #define FALSE 0
@@ -74,29 +74,27 @@ void appenditem(Item *item, Item **list, Item **last) {
 }
 
 void calcoffsets(void) {
-    int i, n;
+	int i, n;
 
-	if (lines>0) {
+	if (lines > 0) {
 		n = lines;
 	} else {
 		n = mw - (promptw + inputw + textw("<") + textw(">"));
 
-        for (i = 0, next = curr; next; next = next->right) {
-
+		for (i = 0, next = curr; next; next = next->right) {
 				i += (lines>0 ? 1 : MIN(textw(next->text), n));
-                if (i > n) {
-	                break;
-	            }
-	    }
-	    
-        for (i = 0, prev = curr; prev && prev->left; prev = prev->left) {
+				if (i > n) {
+					break;
+				}
+		}
 
+		for (i = 0, prev = curr; prev && prev->left; prev = prev->left) {
 			i += (lines>0 ? 1 : MIN(textw(prev->left->text), n));
-            if (i > n) {
-                break;
-            }
-	    }
-    }
+			if (i > n) {
+				break;
+			}
+		}
+	}
 }
 
 void cleanup() {
@@ -121,15 +119,15 @@ void drawtext(const char *t, size_t w, Color col) {
 
 	if (w<3) {
 		/* This is the minimum size needed to write a label: 1 char + 2 padding spaces */
-		return; 
+		return;
 	}
-	
+
 	tw = w-2; /* This is the text width, without the padding */
 	buf = calloc(1, (tw+1));
 	if (buf == NULL) {
 		die("Can't calloc.");
 	}
-	
+
 	switch(col) {
 		case Debug:
 			prestr = DEBUG_SEQ;
@@ -145,9 +143,9 @@ void drawtext(const char *t, size_t w, Color col) {
 	}
 
 	memset(buf, ' ', tw);
-	buf[tw]='\0';
+	buf[tw] = '\0';
 	memcpy(buf, t, MIN(strlen(t), tw));
-	if (textw(t)>w) {
+	if (textw(t) > w) {
 		/* Remember textw returns the width WITH padding */
 		for (i=MAX((tw-2), 0); i<tw; i++) {
 			buf[i]='.';
@@ -170,38 +168,38 @@ void drawmenu(void) {
 	fprintf(stderr, "\033[K");
 
 	if (prompt) {
-		drawtext(prompt, promptw, Highlight);
+		drawtext(prompt, promptw, Normal);
 	}
 
-	drawtext(text, ((lines==0 && matches)?inputw:mw-promptw), Normal);
+	drawtext(text, ((lines==0 && matches) ? inputw : mw-promptw), Normal);
 
-	if (lines>0) {
-		if (barpos!=0) {
+	if (lines > 0) {
+		if (barpos != 0) {
 			resetline();
 		}
-		
-		for (rw=0, item = curr; item != next; rw++, item = item->right) {
+
+		for (rw=0, item=curr; item!=next && rw<lines; rw++, item=item->right) {
 			fprintf(stderr, "\n");
 			drawtext(item->text, mw, (item == sel) ? Highlight : Normal);
 		}
-		
+
 		for(; rw<lines; rw++) {
 			fprintf(stderr, "\n\033[K");
 		}
 		resetline();
-		
+
 	} else if (matches) {
 		rw = mw - (6 + promptw + inputw);
-		
+
 		if (curr->left) {
 			drawtext("<", 3 /*textw("<")*/, Normal);
 		}
-		
+
 		for (item = curr; item != next; item = item->right) {
 			/* item width */
-			int iw = MIN(textw(item->text), rw); 
+			int iw = MIN(textw(item->text), rw);
 			drawtext(item->text, iw, (item == sel) ? Highlight : Normal);
-			
+
 			rw -= textw(item->text);
 			if (rw <= 0)
 				break;
@@ -237,8 +235,7 @@ void insert(const char *str, ssize_t n) {
 	match(n > 0 && text[cursor] == '\0');
 }
 
-void
-match(int sub) {
+void match(int sub) {
 	size_t len = strlen(text);
 	Item *lexact, *lprefix, *lsubstr, *exactend, *prefixend, *substrend;
 	Item *item, *lnext;
@@ -278,8 +275,7 @@ match(int sub) {
 	calcoffsets();
 }
 
-size_t
-nextrune(int inc) {
+size_t nextrune(int inc) {
 	ssize_t n;
 
 	for(n = cursor + inc; n + inc >= 0 && (text[n] & 0xc0) == 0x80; n += inc);
@@ -325,8 +321,8 @@ void readstdin() {
 }
 
 void resetline(void) {
-	if (barpos!=0) {
-		fprintf(stderr, "\033[%iH", (barpos>0)?0:(mh-lines));
+	if (barpos != 0) {
+		fprintf(stderr, "\033[%iH", (barpos>0) ? 0 : (mh-lines));
 	} else {
 		fprintf(stderr, "\033[%iF", lines);
 	}
@@ -346,7 +342,8 @@ int run(void) {
 			read(0, &c, 1);
 			esc_switch_top:
 			switch (c) {
-				case CONTROL('['): /* ESC, need to press twice due to console limitations */
+				case CONTROL('['):
+					/* ESC, need to press twice due to console limitations */
 					c=CONTROL('C');
 					goto switch_top;
 				case '[':
@@ -357,7 +354,7 @@ int run(void) {
 						case 'H':
 							if (c!='H') {
 								/* Remove trailing '~' from stdin */
-								read(0, &c, 1); 
+								read(0, &c, 1);
 							}
 							c=CONTROL('A');
 							goto switch_top;
@@ -374,7 +371,7 @@ int run(void) {
 						case 'F':
 							if (c!='F') {
 								/* Remove trailing '~' from stdin */
-								read(0, &c, 1); 
+								read(0, &c, 1);
 							}
 							c=CONTROL('E');
 							goto switch_top;
@@ -458,8 +455,8 @@ int run(void) {
 			drawmenu();
 			/* fallthrough */
 		case CONTROL(']'):
-		case CONTROL('\\'): 
-			/* These are usually close enough to RET to replace Shift+RET, 
+		case CONTROL('\\'):
+			/* These are usually close enough to RET to replace Shift+RET,
 			 * again due to console limitations */
 			puts(text);
 			return EXIT_SUCCESS;
@@ -607,12 +604,12 @@ void setup(void) {
 	tio_new.c_cc[VMIN]=1;
 	tcsetattr(0, TCSANOW, &tio_new);
 
-	lines = MIN(MAX(lines, 0), mh);
+	lines = MIN(MAX(lines, 0), mh-1);
 	promptw = (prompt?textw(prompt):0);
 
 	/* text input area */
 	inputw = MIN(inputw, mw/6);
-	
+
 	match(FALSE);
 	if (barpos!=0) {
 		resetline();
@@ -632,11 +629,10 @@ size_t textwn(const char *s, int l) {
 		}
 	}
 	/* Accomodate for padding */
-	return c+2; 
+	return c+2;
 }
 
-int
-main(int argc, char **argv) {
+int main(int argc, char **argv) {
 	int i;
 
 	for (i=0; i<argc; i++) {

@@ -287,8 +287,8 @@ nextrune(int inc) {
 }
 
 void readstdin() {
-	char buf[sizeof text], *p, *maxstr = NULL;
-	size_t i, max = 10, size = 0;
+	char buf[sizeof text], *p;
+	size_t i, str_len, max = 10, size = 0;
 
 	for (i = 0; fgets(buf, sizeof buf, stdin); i++) {
 
@@ -299,29 +299,29 @@ void readstdin() {
 				die("Can't realloc.");
 			}
 		}
-				
+
 		p = strchr(buf, '\n');
 		if (p) {
 			*p = '\0';
 		}
-			
+
 		items[i].text = strdup(buf);
 		if (!items[i].text) {
 			die("Can't strdup.");
 		}
-			
+
 		/* Get longest item */
-		if (strlen(items[i].text) > max) {
-			maxstr = items[i].text;
-			max = textw(maxstr);
+		str_len = textw(items[i].text);
+		if (str_len > max) {
+			max = str_len;
 		}
 	}
-	
+
 	if (items) {
 		items[i].text = NULL;
 	}
-	
-	inputw = textw(maxstr);
+
+	inputw = max;
 }
 
 void resetline(void) {

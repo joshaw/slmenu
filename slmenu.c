@@ -10,7 +10,6 @@
 #include <termios.h>
 #include <unistd.h>
 
-#define XSEL        "xsel -ob 2>/dev/null || cat /tmp/.sandy.clipboard.$USER"
 #define CONTROL(ch) (ch ^ 0x40)
 #define MIN(a,b)    ((a) < (b) ? (a) : (b))
 #define MAX(a,b)    ((a) > (b) ? (a) : (b))

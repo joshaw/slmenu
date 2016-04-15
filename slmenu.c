@@ -681,5 +681,6 @@ main(int argc, char **argv) {
 	drawmenu();
 	i = run();
 	cleanup();
+	free(items);
 	return i;
 }

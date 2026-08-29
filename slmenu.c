@@ -48,6 +48,7 @@ static void   resetline(void);
 static void   setup(void);
 static size_t textw(const char*);
 static size_t textwn(const char*, int);
+static void   usage(void);
 
 static char   text[BUFSIZ] = "";
 static int    barpos = 0;
@@ -632,6 +633,18 @@ size_t textwn(const char *s, int l) {
 	return c+2;
 }
 
+void usage(void) {
+	puts("usage: slmenu [-bhitv] [-l lines] [-p prompt]\n"
+	     "\n"
+	     "  -b         appear at the bottom of the terminal\n"
+	     "  -t         appear at the top of the terminal\n"
+	     "  -i         match menu items case insensitively\n"
+	     "  -l lines   list items vertically, on the given number of lines\n"
+	     "  -p prompt  display prompt to the left of the input field\n"
+	     "  -v         print version information and exit\n"
+	     "  -h         print this help and exit");
+}
+
 int main(int argc, char **argv) {
 	int i;
 
@@ -640,6 +653,11 @@ int main(int argc, char **argv) {
 		if (!strcmp(argv[i], "-v")) {
 			/* version */
 			puts("slmenu, © 2011 slmenu engineers, see LICENSE for details");
+			exit(EXIT_SUCCESS);
+
+		} else if (!strcmp(argv[i], "-h")) {
+			/* help */
+			usage();
 			exit(EXIT_SUCCESS);
 
 		} else if (!strcmp(argv[i], "-i")) {

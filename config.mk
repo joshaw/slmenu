@@ -2,7 +2,7 @@
 VERSION = 0.1
 
 # paths
-PREFIX = /usr
+PREFIX = /usr/local
 MANPREFIX = ${PREFIX}/share/man
 
 # flags

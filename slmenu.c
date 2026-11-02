@@ -97,7 +97,7 @@ void calcoffsets(void) {
 	}
 }
 
-void cleanup() {
+void cleanup(void) {
 	if (barpos==0) {
 		fprintf(stderr, "\n");
 	} else {
@@ -282,7 +282,7 @@ size_t nextrune(int inc) {
 	return n;
 }
 
-void readstdin() {
+void readstdin(void) {
 	char buf[sizeof text], *p;
 	size_t i, str_len, max = 10, size = 0;
 
